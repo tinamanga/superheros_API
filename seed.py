@@ -1,26 +1,20 @@
-from app import app, db 
-from models import Hero, Power, HeroPower  
+from app import create_app,app
+from extensions import db
+from models import Hero, Power, HeroPower
+
+app = create_app()
 
 with app.app_context():
-   
-    Hero.query.delete()
-    Power.query.delete()
-    HeroPower.query.delete()
+    db.drop_all()
+    db.create_all()
 
-  
-    hero1 = Hero(name="Kamala Khan", super_name="Ms. Marvel")
-    hero2 = Hero(name="Gwen Stacy", super_name="Spider-Gwen")
+    h1 = Hero(name="Kamala Khan", super_name="Ms. Marvel")
+    p1 = Power(name="flight", description="gives the wielder the ability to fly through the skies at supersonic speed")
+    db.session.add_all([h1, p1])
+    db.session.commit()
 
-   
-    power1 = Power(name="flight", description="gives the wielder the ability to fly through the skies at supersonic speed")
-    power2 = Power(name="super strength", description="gives the wielder super-human strengths")
-
-    
-    hp1 = HeroPower(hero=hero1, power=power1, strength="Strong")
-    hp2 = HeroPower(hero=hero2, power=power2, strength="Average")
-
- 
-    db.session.add_all([hero1, hero2, power1, power2, hp1, hp2])
+    hp1 = HeroPower(strength="Strong", hero_id=h1.id, power_id=p1.id)
+    db.session.add(hp1)
     db.session.commit()
 
     print("Seed data added successfully!")
